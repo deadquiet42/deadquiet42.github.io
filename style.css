@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{--bg:#000;--text:#919191;--bright:#f4f4f4;--dim:#6a6a6a;--line:#1c1c1c;--cyan:#00ffec;--magenta:#ff00ce;--yellow:#fffc02}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font:15px/1.7 'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;max-width:720px;margin:0 auto;padding:56px 24px 72px}
+a{color:var(--bright);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:4px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:64px}
+header a{color:var(--text)}
+.blocks{display:inline-flex;gap:4px}
+.blocks i{display:block;width:9px;height:9px}
+.blocks i:nth-child(1){background:var(--cyan)}.blocks i:nth-child(2){background:var(--magenta)}.blocks i:nth-child(3){background:var(--yellow)}
+.intro{color:var(--bright);font-size:17px;margin-bottom:56px}
+.intro span{display:block;color:var(--text);font-size:15px;margin-top:6px}
+.work{display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center;padding:28px 0;border-top:1px solid var(--line)}
+.work:last-of-type{border-bottom:1px solid var(--line)}
+.work img{width:200px;height:150px;display:block;border:1px solid var(--line)}
+.work h2,.title h1{font-weight:500;color:var(--bright);font-size:17px;letter-spacing:.08em;border-left:3px solid var(--accent);padding-left:12px}
+.work .kind{font-size:13px;color:var(--dim);margin:4px 0 8px 15px}
+.work p{margin-left:15px}
+.title{margin-bottom:32px}
+.title .kind{color:var(--dim);font-size:13px;margin:6px 0 0 15px}
+.shots{display:grid;gap:12px;margin:0 0 40px}
+.shots img{width:100%;max-width:640px;display:block;image-rendering:pixelated;border:1px solid var(--line)}
+section{margin:0 0 40px}
+h3{font-weight:500;color:var(--bright);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+section p+p{margin-top:12px}
+.download{display:inline-block;margin:4px 0 12px;padding:12px 20px;border:1px solid var(--accent);color:var(--bright)}
+.download:hover{background:var(--accent);color:#000;text-decoration:none}
+.small{font-size:13px}
+table{border-collapse:collapse;width:100%}
+td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--bright);width:46%;padding-right:16px}
+ol{padding-left:22px}
+li+li{margin-top:6px}
+code{color:var(--bright)}
+footer{margin-top:72px;font-size:13px;color:var(--dim)}
+@media (max-width:560px){.shots img{image-rendering:auto}body{padding:36px 16px 56px;font-size:14px}header{margin-bottom:44px}.work{grid-template-columns:1fr;gap:16px}.work img{width:100%;height:auto}td:first-child{width:50%}}
