@@ -35,4 +35,4 @@ ol{padding-left:22px}
 li+li{margin-top:6px}
 code{color:var(--bright)}
 footer{margin-top:72px;font-size:13px;color:var(--dim)}
-@media (max-width:560px){.shots img{image-rendering:auto}body{padding:36px 16px 56px;font-size:14px}header{margin-bottom:44px}.work{grid-template-columns:1fr;gap:16px}.work img{width:100%;height:auto}td:first-child{width:50%}}
+@media (max-width:560px){.shots img{image-rendering:auto;height:auto}body{padding:36px 16px 56px;font-size:14px}header{margin-bottom:44px}.work{grid-template-columns:1fr;gap:16px}.work img{width:100%;height:auto}td:first-child{width:50%}}
