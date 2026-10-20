@@ -4,46 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>STAK · deadquiet42</title>
-<meta name="description" content="A physics sculpture for small computers. Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.">
+<meta name="description" content="A physics sculpture for PICO-8. Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.">
 <link rel="icon" href="../icon.png">
 <link rel="stylesheet" href="../style.css">
+<style>
+.player{width:100%;max-width:512px;aspect-ratio:1;border:1px solid var(--line);background:#000;margin:0 0 40px}
+.player iframe{display:block;width:100%;height:100%;border:0}
+</style>
 </head>
 <body>
 <header><a href="../">deadquiet42</a><span class="blocks"><i></i><i></i><i></i></span></header>
-<main style="--accent:#00ffec">
+<main style="--accent:#29adff">
 <div class="title"><h1>STAK</h1><p class="kind">a physics sculpture</p></div>
-<div class="shots"><img src="screenshot.png" alt="STAK running on a handheld" width="640" height="480"></div>
-<section><p>A physics sculpture for small computers. Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.</p><p>It is harder than it looks. A run to five is good.</p></section>
+<div class="player"><iframe src="play.html" title="STAK, playable in the browser" allow="autoplay; fullscreen; gamepad"></iframe></div>
+<section><p>Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.</p><p>It is harder than it looks. A run to five is good.</p></section>
 <section>
-<h3>Handheld (PortMaster)</h3>
-<a class="download" href="stak.zip" download>stak.zip</a>
-<p class="small">26 KB · Tested on RG35XXSP (muOS) and R36S (ArkOS).</p>
-</section>
-<section>
-<h3>Desktop versions</h3>
-<p><a class="download" href="stak-windows.zip" download>Windows</a> <a class="download" href="stak-linux.zip" download>Linux</a> </p>
-<p class="small">The same piece for computers, with Python built in. Windows may warn that the app is from an unknown developer; it isn’t signed, because signing costs money every year. Choose More info, then Run anyway.</p>
-</section>
-<section>
-<h3>Install on a handheld</h3>
-<ol>
-<li>You need a Linux handheld with <a href="https://portmaster.games">PortMaster</a> installed.</li>
-<li>Copy <code>stak.zip</code>, still zipped, into the <code>autoinstall</code> folder inside PortMaster on your SD card.</li>
-<li>Open PortMaster once. STAK installs itself and appears under Ports.</li>
-</ol>
+<h3>Cartridge</h3>
+<a class="download" href="stak.p8.png" download>stak.p8.png</a>
+<p class="small">16 KB · For PICO-8, or any handheld with a PICO-8 player. The cartridge is the picture; open it in PICO-8 with <code>load stak.p8.png</code>.</p>
 </section>
 <section>
 <h3>Controls</h3>
-<table><tr><td>D-pad up and down</td><td>choose shape</td></tr><tr><td>D-pad left and right</td><td>move shape</td></tr><tr><td>L1 and R1</td><td>turn shape (hold to keep turning)</td></tr><tr><td>Left stick</td><td>choose and move, where present</td></tr><tr><td>Right stick</td><td>turn, where present</td></tr><tr><td>A</td><td>drop or confirm</td></tr><tr><td>B</td><td>cancel</td></tr><tr><td>Start</td><td>restart prompt</td></tr><tr><td>Hold Select</td><td>reset best score prompt</td></tr><tr><td>Select and Start</td><td>exit</td></tr></table>
-</section>
-<section>
-<h3>Keyboard</h3>
-<table><tr><td>Left and right arrows</td><td>move shape</td></tr><tr><td>Up and down arrows</td><td>choose shape</td></tr><tr><td>Z and X</td><td>turn shape</td></tr><tr><td>Space</td><td>drop or confirm</td></tr><tr><td>Backspace</td><td>cancel</td></tr><tr><td>R</td><td>restart</td></tr><tr><td>Hold Delete</td><td>reset best score</td></tr><tr><td>Esc</td><td>exit</td></tr></table>
-<p class="small" style="margin-top:12px">A game controller also works on desktop.</p>
+<table><tr><td>Up and down</td><td>choose shape</td></tr><tr><td>Left and right</td><td>move shape</td></tr><tr><td>Hold O, then left or right</td><td>turn shape</td></tr><tr><td>X</td><td>drop or confirm</td></tr><tr><td>O</td><td>cancel</td></tr><tr><td>Pause menu</td><td>restart, reset best score</td></tr></table>
+<p class="small" style="margin-top:12px">On a keyboard, O is Z and X is X. Press Enter for the pause menu.</p>
 </section>
 <section>
 <h3>Notes</h3>
-<p>Pure Python on PortMaster’s python_3.11 runtime. No bundled libraries, fonts or sounds. Made for 640 by 480 screens; it letterboxes on others.</p>
+<p>Made in PICO-8. Your best score is kept between plays.</p>
 <p>STAK is freeware. You are welcome to share unmodified copies.</p>
 </section>
 </main>
