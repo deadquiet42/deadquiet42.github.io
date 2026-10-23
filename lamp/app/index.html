@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Perpetual Lamp" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>Perpetual Lamp · deadquiet42</title>
+  <meta name="description" content="A digital companion inspired by oil lamps, tending and acts of maintenance." />
+  <link rel="canonical" href="https://deadquiet42.github.io/lamp/app/" />
+  <meta property="og:title" content="Perpetual Lamp · deadquiet42" />
+  <meta property="og:description" content="A digital companion inspired by oil lamps, tending and acts of maintenance." />
+  <meta property="og:url" content="https://deadquiet42.github.io/lamp/app/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Perpetual Lamp · deadquiet42" />
+  <meta name="twitter:description" content="A digital companion inspired by oil lamps, tending and acts of maintenance." />
+  <meta property="og:image" content="https://deadquiet42.github.io/lamp/app/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The white nested-flame symbol of Perpetual Lamp on a dark background." />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#181818">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180-v2.png">
+</head>
+<body>
+  <header class="row space ui-layer">
+    <h1>Perpetual Lamp</h1>
+
+    <div class="header-actions">
+      <button id="fullscreenBtn" class="icon-btn minimal-btn" title="Fullscreen" type="button" aria-label="Fullscreen">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 4H4v4M4 4l6 6M16 4h4v4M20 4l-6 6M8 20H4v-4M4 20l6-6M16 20h4v-4M20 20l-6-6"/>
+        </svg>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn minimal-btn" title="Settings" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3.2"/>
+          <path d="M12 3.5v2.2M12 18.3v2.2M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M3.5 12h2.2M18.3 12h2.2M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="col center gap24">
+    <div class="lamp-scene" data-bg="ash">
+      <div class="bg-layer"></div>
+
+      <div class="lamp">
+        <img src="base-01.png" class="lamp-base" width="787" height="787" alt="Lamp base" />
+        <div class="flame-mount"></div>
+      </div>
+    </div>
+
+    <p id="status" class="ui-layer">The lamp is empty.</p>
+
+    <div class="row gap8 ui-layer">
+      <button id="add-oil" disabled type="button">Add oil</button>
+      <button id="light" type="button">Light</button>
+      <button id="extinguish" disabled type="button">Extinguish</button>
+    </div>
+  </main>
+
+  <p id="unlit-prompt" hidden>Add oil. Light the Flame.</p>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Lamp settings">    <div class="modal-box">
+
+      <p id="lock-note" class="muted small">
+        Extinguish to change.
+      </p>
+
+      <div class="modal-controls">
+        <div class="setting-row">
+          <span class="setting-label">Base</span>
+
+          <div class="choice-line" role="radiogroup" aria-label="Vessel">
+            <button class="text-choice vessel-choice" type="button" data-base="base-01" aria-pressed="false">Cairn</button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-02" aria-pressed="false">Sanctum</button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-03" aria-pressed="false">Vessel</button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-04" aria-pressed="false">Reliquary</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <span class="setting-label">Flame</span>
+
+          <div class="choice-line" role="radiogroup" aria-label="Flame colour">
+            <button class="dot-choice flame-choice amber-dot" type="button" data-color="amber" aria-label="Amber" aria-pressed="false"></button>
+            <button class="dot-choice flame-choice blue-dot" type="button" data-color="blue" aria-label="Blue" aria-pressed="false"></button>
+            <button class="dot-choice flame-choice green-dot" type="button" data-color="green" aria-label="Green" aria-pressed="false"></button>
+            <button class="dot-choice flame-choice purple-dot" type="button" data-color="purple" aria-label="Purple" aria-pressed="false"></button>
+          </div>
+        </div>
+
+        <div id="long-watch" hidden aria-live="polite">
+          <p class="setting-label long-watch-title">The Long Watch</p>
+          <p id="long-watch-burning" class="muted small">
+            Other lamps are quiet.
+          </p>
+          <div>
+            <div class="setting-row">
+              <span class="setting-label">Current longest vigil</span>
+              <span id="long-watch-longest" class="memory-value">—</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Current average vigil</span>
+              <span id="long-watch-average" class="memory-value">—</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">My longest vigil</span>
+              <span id="best-streak" class="memory-value">0h</span>
+            </div>
+          </div>
+        </div>
+
+        <button id="reset" class="reset-link" type="button">Reset lamp</button>
+        <p class="version-mark" aria-label="Version 1.5">v1.5</p>
+
+        <select id="base" hidden aria-hidden="true">
+          <option value="base-01">Vessel</option>
+          <option value="base-02">Reliquary</option>
+          <option value="base-03">Sanctum</option>
+        </select>
+
+        <select id="color" hidden aria-hidden="true">
+          <option value="amber">Amber</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="purple">Purple</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="reset-confirm" class="modal hidden" role="dialog" aria-modal="true"
+       aria-labelledby="reset-confirm-title" aria-describedby="reset-confirm-description">
+    <div class="modal-box confirm-box">
+      <div class="confirm-copy">
+        <h2 id="reset-confirm-title" class="modal-head">Extinguish and forget?</h2>
+        <p id="reset-confirm-description" class="muted">Oil, vigil and appearance will be lost.</p>
+      </div>
+
+      <div class="confirm-actions">
+        <button id="cancel-reset" type="button">Keep lamp</button>
+        <button id="confirm-reset" type="button">Reset lamp</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="extinguish-confirm" class="modal hidden" role="dialog" aria-modal="true"
+       aria-labelledby="extinguish-confirm-title" aria-describedby="extinguish-confirm-description">
+    <div class="modal-box confirm-box">
+      <div class="confirm-copy">
+        <h2 id="extinguish-confirm-title" class="modal-head">Extinguish?</h2>
+        <p id="extinguish-confirm-description" class="muted">This will end your current vigil.</p>
+        <p id="extinguish-confirm-streak" class="muted small"></p>
+      </div>
+
+      <div class="confirm-actions">
+        <button id="keep-burning" type="button">Keep burning</button>
+        <button id="confirm-extinguish" type="button">Extinguish</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script src="pwa.js" defer></script>
+</body>
+</html>
