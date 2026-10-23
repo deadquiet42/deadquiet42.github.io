@@ -1,9 +1,9 @@
 {
   "name": "Perpetual Lamp",
   "short_name": "Lamp",
-  "id": "/lamp/app/",
-  "start_url": "/lamp/app/",
-  "scope": "/lamp/app/",
+  "id": "/lamp/",
+  "start_url": "/lamp/",
+  "scope": "/lamp/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
