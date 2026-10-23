@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Soluna" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>Soluna · deadquiet42</title>
+  <script>
+    try { localStorage.removeItem("soluna_appearance_v1"); } catch {}
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="An astronomical timepiece guided by solar noon, lunar phase and seasonal turning." />
+  <link rel="canonical" href="https://deadquiet42.github.io/soluna/app/" />
+  <meta property="og:title" content="Soluna · deadquiet42" />
+  <meta property="og:description" content="An astronomical timepiece guided by solar noon, lunar phase and seasonal turning." />
+  <meta property="og:url" content="https://deadquiet42.github.io/soluna/app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://deadquiet42.github.io/soluna/app/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The concentric astronomical dial of Soluna on a black background." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Soluna · deadquiet42" />
+  <meta name="twitter:description" content="An astronomical timepiece guided by solar noon, lunar phase and seasonal turning." />
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180-v2.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+</head>
+<body>
+  <main id="app" aria-label="Soluna clock">
+    <canvas id="clock" width="600" height="600" role="button" tabindex="0" aria-label="Open Soluna readings" aria-haspopup="dialog" aria-controls="overlay" aria-expanded="false"></canvas>
+
+    <p id="firstHint" class="first-hint">touch for readings</p>
+
+    <section id="overlay" aria-hidden="true" aria-label="Soluna readings">
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" tabindex="-1">
+        <header>
+          <h1 id="overlayTitle" class="brand">Soluna</h1>
+          <p class="version-mark" aria-label="Version 1.5">v1.5</p>
+        </header>
+
+        <div class="content">
+          <div id="temporalPhrase" class="temporal-phrase" aria-label="Temporal reading">astronomical readings</div>
+          <p class="about-line">Soluna reads time through solar noon, lunar phase, seasonal turning and place.</p>
+
+          <div class="grid" aria-label="Astronomical readings">
+            <div class="reading solarReading">
+              <h2>Solar day</h2>
+              <p id="solarSummary">Noon to noon</p>
+              <small id="solarPhrase">Position within the noon-to-noon cycle</small>
+            </div>
+            <div class="reading lunarReading">
+              <h2>Lunation</h2>
+              <p id="lunaSummary">—</p>
+              <small id="lunaPhrase">Current phase and illumination</small>
+            </div>
+            <div class="reading turningReading">
+              <h2>Turning</h2>
+              <p id="turningSummary">—</p>
+              <small id="turningPhrase">Next equinox or solstice</small>
+            </div>
+            <div class="reading locationReading">
+              <h2>Place</h2>
+              <p id="locSummary">—</p>
+              <small id="locPhrase">Longitude source for the dial</small>
+            </div>
+          </div>
+
+          <footer>
+            <p id="modelSummary" class="note">Solar: Meeus · Moon: short series · ΔT: approximate · location read from the browser only when permitted</p>
+          </footer>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script src="pwa.js" defer></script>
+</body>
+</html>
