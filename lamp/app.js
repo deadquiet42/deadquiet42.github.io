@@ -25,6 +25,7 @@ const longWatchBurning  = $('#long-watch-burning');
 const longWatchLongest  = $('#long-watch-longest');
 const longWatchAverage  = $('#long-watch-average');
 const unlitPrompt    = $('#unlit-prompt');
+const watchLine      = $('#watch-line');
 const extinguishConfirm = $('#extinguish-confirm');
 const extinguishConfirmStreak = $('#extinguish-confirm-streak');
 const keepBurningBtn = $('#keep-burning');
@@ -370,8 +371,69 @@ const engine = new LampEngine({
     setSettingsLock(lit);
     wasLit = snap.isLit;
     longWatch.updateFromSnap(snap);
+    syncWakeLock();
+    if (becameLit) refreshWatchLine();
+    if (!snap.isLit) renderWatchLine(null);
   }
 });
+
+let watchLineRequestId = 0;
+
+function renderWatchLine(stats) {
+  const burning = Math.round(stats?.burning || 0);
+
+  if (!lit || burning < 2) {
+    watchLine.hidden = true;
+    watchLine.textContent = '';
+    return;
+  }
+
+  watchLine.textContent = formatWatchStats(stats, 0).burning;
+  watchLine.hidden = false;
+}
+
+async function refreshWatchLine() {
+  if (!lit || !isPageActive()) return;
+  const requestId = ++watchLineRequestId;
+
+  try {
+    const stats = await longWatch.fetchStats();
+    if (requestId === watchLineRequestId) renderWatchLine(stats || longWatch.getCachedStats());
+  } catch {
+    if (requestId === watchLineRequestId) renderWatchLine(longWatch.getCachedStats());
+  }
+}
+
+let wakeLock = null;
+let wakeLockPending = false;
+
+async function syncWakeLock() {
+  const want = lit && isPageActive() && 'wakeLock' in navigator;
+
+  if (!want) {
+    if (wakeLock) {
+      const held = wakeLock;
+      wakeLock = null;
+      try { await held.release(); } catch {}
+    }
+    return;
+  }
+
+  if (wakeLock || wakeLockPending) return;
+  wakeLockPending = true;
+
+  try {
+    const sentinel = await navigator.wakeLock.request('screen');
+    sentinel.addEventListener('release', () => {
+      if (wakeLock === sentinel) wakeLock = null;
+    });
+    wakeLock = sentinel;
+    if (!(lit && isPageActive())) syncWakeLock();
+  } catch {
+  } finally {
+    wakeLockPending = false;
+  }
+}
 
 function setSettingsLock(isLit) {
   const locked = !!isLit;
@@ -450,6 +512,7 @@ function renderLongWatch(stats, { loading = false } = {}) {
 
   const formatted = formatWatchStats(stats, personalBestMs);
   longWatchBurning.textContent = formatted.burning;
+  renderWatchLine(stats);
   longWatchLongest.textContent = formatted.longest;
   longWatchAverage.textContent = formatted.average;
 }
@@ -584,6 +647,7 @@ function showUI() {
   if (uiTimer) clearTimeout(uiTimer);
 
   if (!lit || !isPageActive()) return;
+  refreshWatchLine();
   if (!modal.classList.contains('hidden')) return;
   if (!extinguishConfirm.classList.contains('hidden')) return;
 
@@ -748,6 +812,7 @@ function syncPageActivity() {
 
   longWatch.setPaused(!active);
   engine.setPaused(!active);
+  syncWakeLock();
 
   if (!active) {
     longWatchRequestId++;
