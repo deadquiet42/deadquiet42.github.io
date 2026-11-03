@@ -1,4 +1,4 @@
-const CACHE_NAME = 'perpetual-lamp-v14';
+const CACHE_NAME = 'perpetual-lamp-v15';
 const NAVIGATION_TIMEOUT_MS = 3000;
 const APP_SCOPE_PATH = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
