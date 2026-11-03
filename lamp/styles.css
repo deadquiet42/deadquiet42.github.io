@@ -33,6 +33,15 @@ body {
   touch-action: pan-x pan-y;
 }
 
+button,
+a,
+label,
+select {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 body {
   min-height: 100svh;
   background: #000;

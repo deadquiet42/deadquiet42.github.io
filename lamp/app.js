@@ -147,11 +147,20 @@ document.addEventListener('touchmove', e => {
   if (e.touches.length > 1 || (e.scale !== undefined && e.scale !== 1)) e.preventDefault();
 }, { passive: false });
 
+// A quick second tap zooms on iOS, buttons included (Add oil, and "Full" once it
+// is disabled). Swallow the second tap's default and pass it on as a click so
+// rapid tapping still registers every tap.
 let lastTouchEnd = 0;
 document.addEventListener('touchend', e => {
   const now = Date.now();
-  if (now - lastTouchEnd < 320 && !e.target.closest('button')) e.preventDefault();
+  const quick = now - lastTouchEnd < 350;
   lastTouchEnd = now;
+  if (!quick || e.touches.length) return;
+  const target = e.target instanceof Element ? e.target : null;
+  if (target && target.closest('input, select, textarea, [contenteditable]')) return;
+  e.preventDefault();
+  const btn = target && target.closest('button, a, label, [role="button"]');
+  if (btn && !btn.disabled) btn.click();
 }, { passive: false });
 
 window.addEventListener('wheel', e => {
