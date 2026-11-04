@@ -1,4 +1,4 @@
-const CACHE_NAME = 'perpetual-lamp-v16';
+const CACHE_NAME = 'perpetual-lamp-v17';
 const NAVIGATION_TIMEOUT_MS = 3000;
 const APP_SCOPE_PATH = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
@@ -17,7 +17,7 @@ const APP_SHELL = [
   './base-04.png',
   './icons/icon-16x16.png',
   './icons/icon-32x32.png',
-  './icons/icon-180x180-v2.png',
+  './icons/icon-180x180-v3.png',
   './icons/icon-192x192.png',
   './icons/icon-512x512.png',
   './icons/icon-maskable-512x512.png'
