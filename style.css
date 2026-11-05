@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
-:root{--bg:#000;--text:#919191;--bright:#f4f4f4;--dim:#808080;--line:#1c1c1c;--cyan:#00ffec;--magenta:#ff00ce;--yellow:#fffc02}
+:root{--bg:#000;--text:#919191;--bright:#f4f4f4;--dim:#808080;--line:#1c1c1c;--pink:#f7adce;--blue:#7fd3f7;--mint:#84f2b3;--lilac:#c49bdf;--yellow:#ffde17}
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg)}
 body{background:var(--bg);color:var(--text);font:15px/1.7 'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;max-width:720px;margin:0 auto;padding:56px 24px 72px}
