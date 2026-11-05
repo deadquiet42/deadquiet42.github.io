@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<<<<<<< HEAD
   <url><loc>https://deadquiet42.github.io/</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://deadquiet42.github.io/form/</loc><lastmod>2026-11-03</lastmod></url>
   <url><loc>https://deadquiet42.github.io/momo/</loc><lastmod>2026-10-24</lastmod></url>
   <url><loc>https://deadquiet42.github.io/lilt/</loc><lastmod>2026-10-23</lastmod></url>
+=======
+  <url><loc>https://deadquiet42.github.io/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/form/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/momo/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/lilt/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/stak/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/lamp/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/soluna/</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://deadquiet42.github.io/geogrowth/</loc><lastmod>2026-11-04</lastmod></url>
+>>>>>>> 25c7a12acaa4f9401bd1d2dc0750f897d03bdd69
 </urlset>

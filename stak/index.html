@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAK · deadquiet42</title>
+<meta name="description" content="A balancing game for Linux handhelds. Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.">
+<link rel="canonical" href="https://deadquiet42.github.io/stak/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="deadquiet42">
+<meta property="og:title" content="STAK · deadquiet42">
+<meta property="og:description" content="A balancing game for Linux handhelds. Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.">
+<meta property="og:url" content="https://deadquiet42.github.io/stak/">
+<meta property="og:image" content="https://deadquiet42.github.io/stak/cover.png">
+<meta property="og:image:alt" content="STAK title screen">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon.png?v=5">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header><a href="../">deadquiet42</a><img class="logo" src="../logo.png" alt="" width="30" height="15"></header>
+<main style="--accent:#29adff">
+<div class="title"><h1>STAK</h1><p class="kind">a balancing game</p></div>
+<div class="shots"><span class="frame"><video class="loop" data-src="loop.mp4" poster="screenshot.png" width="640" height="480" muted loop playsinline preload="none" aria-label="Three pieces stacked in STAK before the fourth falls"></video></span><p class="small"><a href="https://www.youtube.com/shorts/DaPtYS1nnEc">Watch with sound on YouTube</a></p></div>
+<section><p>Choose from three shapes, turn and place each one, and balance six pieces into a structure that stands on its own.</p><p>It is harder than it looks. A run to five is good.</p></section>
+<section>
+<h3>Handheld (PortMaster)</h3>
+<a class="download" href="stak.zip" download>stak.zip</a>
+<p class="small">21 KB · In testing. <a href="https://github.com/deadquiet42/stak">Source</a></p>
+</section>
+<section>
+<h3>Install on a handheld</h3>
+<ol>
+<li>You need a Linux handheld with <a href="https://portmaster.games">PortMaster</a> installed.</li>
+<li>Copy <code>stak.zip</code>, still zipped, into the <code>autoinstall</code> folder inside PortMaster on your SD card.</li>
+<li>Open PortMaster once. STAK installs itself and appears under Ports.</li>
+</ol>
+</section>
+<section>
+<h3>Controls</h3>
+<table><tr><td>D-pad up and down</td><td>choose shape</td></tr><tr><td>D-pad left and right</td><td>move shape</td></tr><tr><td>L1 and R1</td><td>turn shape (hold to keep turning)</td></tr><tr><td>A</td><td>drop or confirm</td></tr><tr><td>B</td><td>cancel</td></tr><tr><td>Start</td><td>restart</td></tr><tr><td>Hold Select</td><td>reset best score</td></tr><tr><td>Select and Start</td><td>exit</td></tr></table>
+</section>
+<section>
+<h3>Notes</h3>
+<p>A small Python program using PortMaster's shared Python runtime and the system SDL2 library. No bundled files; every sound is generated at launch. Made for 640 by 480 screens; it letterboxes on others. Your best score is kept between plays.</p>
+<p>STAK is freeware. You are welcome to share unmodified copies.</p>
+</section>
+</main>
+<script src="../loops.js"></script>
+</body>
+</html>
