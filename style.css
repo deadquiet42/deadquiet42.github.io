@@ -30,6 +30,7 @@ header h1{font:inherit;margin:0;letter-spacing:inherit}
 .work h2,.title h1{font-weight:500;color:var(--bright);font-size:17px;letter-spacing:.08em;border-left:3px solid var(--accent);padding-left:12px}
 .work .kind{font-size:13px;color:var(--dim);margin:4px 0 8px 15px}
 .work p{margin-left:15px}
+.work h2 a{color:inherit}.work h2 a:hover{text-decoration:none}.work .src{font-size:13px;margin-top:8px}.src a{color:var(--dim)}.src a:hover{color:var(--bright)}
 .title{margin-bottom:32px}
 .title .kind{color:var(--dim);font-size:13px;margin:6px 0 0 15px}
 .shots{display:grid;gap:12px;margin:0 0 40px}
