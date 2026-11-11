@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LILT · deadquiet42</title>
+<meta name="description" content="A musical grid for small computers. Place notes on a sixteen by eight grid, let them loop, then shape the sound with echo, space, pace and wobble.">
+<link rel="canonical" href="https://deadquiet42.github.io/lilt/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="deadquiet42">
+<meta property="og:title" content="LILT · deadquiet42">
+<meta property="og:description" content="A musical grid for small computers. Place notes on a sixteen by eight grid, let them loop, then shape the sound with echo, space, pace and wobble.">
+<meta property="og:url" content="https://deadquiet42.github.io/lilt/">
+<meta property="og:image" content="https://deadquiet42.github.io/lilt/cover.png">
+<meta property="og:image:alt" content="The LILT note grid">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon.png?v=5">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header><a href="../">deadquiet42</a><img class="logo" src="../logo.png" alt="" width="30" height="15"></header>
+<main style="--accent:#ffde17">
+<div class="title"><h1>LILT</h1><p class="kind">a musical grid</p></div>
+<div class="shots"><span class="frame"><video class="loop" data-src="loop.mp4" poster="screenshot.png" width="640" height="480" muted loop playsinline preload="none" aria-label="LILT running on a handheld"></video></span><p class="small"><a href="https://www.youtube.com/shorts/BrFYkaHQWsE">Watch with sound on YouTube</a></p></div>
+<section><p>A musical grid for small computers. Place notes on a sixteen by eight grid and let them loop, then shape the sound with echo, space, pace and wobble. Nine voices in three sound banks, from glassy and soft to a pocket of chiptune.</p><p>Every sound is generated as it plays. Headphones are worth it.</p></section>
+<section>
+<h3>Handheld (PortMaster)</h3>
+<a class="download" href="lilt.zip" download>lilt.zip</a>
+<p class="small">21 KB · Available in PortMaster. <a href="https://github.com/deadquiet42/lilt">Source</a></p>
+</section>
+<section>
+<h3>Install on a handheld</h3>
+<ol>
+<li>You need a Linux handheld with <a href="https://portmaster.games">PortMaster</a> installed.</li>
+<li>Open PortMaster, find LILT and install it. It appears under Ports.</li>
+<li>Or copy <code>lilt.zip</code>, still zipped, into the <code>autoinstall</code> folder inside PortMaster on your SD card, then open PortMaster once.</li>
+</ol>
+</section>
+<section>
+<h3>Controls</h3>
+<table><tr><td>D-pad</td><td>move (hold to keep moving)</td></tr><tr><td>A</td><td>place notes (hold to paint)</td></tr><tr><td>B</td><td>remove notes (hold to erase)</td></tr><tr><td>X</td><td>empty the pattern</td></tr><tr><td>Y</td><td>change wobble</td></tr><tr><td>L1 and R1</td><td>change pace</td></tr><tr><td>L2 and R2</td><td>change voice</td></tr><tr><td>Select and left or right</td><td>change echo</td></tr><tr><td>Select and up or down</td><td>change space</td></tr><tr><td>Start</td><td>rest or resume</td></tr><tr><td>Select and X</td><td>fresh start</td></tr><tr><td>Select and Start</td><td>exit</td></tr></table>
+</section>
+<section>
+<h3>Notes</h3>
+<p>A small native program using the system SDL2 library. No runtime and no bundled files. Made for 640 by 480 screens; it letterboxes on others.</p>
+<p>LILT is freeware. You are welcome to share unmodified copies.</p>
+</section>
+</main>
+<script src="../loops.js"></script>
+</body>
+</html>
