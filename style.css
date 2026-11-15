@@ -16,6 +16,12 @@ header h1{font:inherit;margin:0;letter-spacing:inherit}
 .intro .links a:hover{color:var(--bright);text-decoration:none}
 .intro .links svg{display:block;flex:none}
 .series+.series{margin-top:64px}
+.hero{margin:0 0 72px}
+.film{position:relative;aspect-ratio:16/9;background:#000;border:1px solid var(--line);margin-bottom:20px}
+.film iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.hero h2{font-weight:500;color:var(--bright);font-size:17px;letter-spacing:.08em;border-left:3px solid var(--accent);padding-left:12px}
+.hero .kind{font-size:13px;color:var(--dim);margin:4px 0 0 15px}
+
 .where{font-size:13px;color:var(--dim);margin-bottom:16px}
 .work{display:grid;grid-template-columns:202px 1fr;gap:28px;align-items:center;padding:28px 0;border-top:1px solid var(--line);color:inherit}
 .work:hover{text-decoration:none}
