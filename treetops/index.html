@@ -253,11 +253,12 @@ async function post() {
   update();
 }
 
-if (location.hash === '#admin' && API && !adminKey) {
-  adminKey = prompt('Admin key') || '';
-  if (adminKey) sessionStorage.setItem('onefortyadmin', adminKey);
+if (location.hash === '#admin') {
+  const k = API ? prompt('Admin key') : '';
+  if (k) { adminKey = k; sessionStorage.setItem('onefortyadmin', k); }
   history.replaceState(null, '', location.pathname);
 }
+addEventListener('hashchange', () => { if (location.hash === '#admin') location.reload(); });
 
 try { handleBox.value = localStorage.getItem('onefortyhandle') || ''; } catch {}
 sentCode = '';
