@@ -323,9 +323,10 @@ sentCode = START;
 codeBox.addEventListener('input', () => {
   const chars = [...codeBox.value];
   if (chars.length > 140) {
-    const pos = codeBox.selectionStart - (codeBox.value.length - chars.slice(0, 140).join('').length);
-    codeBox.value = chars.slice(0, 140).join('');
-    codeBox.setSelectionRange(Math.max(0, pos), Math.max(0, pos));
+    const capped = chars.slice(0, 140).join('');
+    const pos = Math.min(codeBox.selectionStart, capped.length);
+    codeBox.value = capped;
+    codeBox.setSelectionRange(pos, pos);
   }
   update();
 });
