@@ -1,7 +1,7 @@
 {
   "name": "Soluna",
   "short_name": "Soluna",
-  "description": "A minimalist astronomical timepiece guided by solar noon, lunar phase, and seasonal turning.",
+  "description": "An astronomical timepiece guided by solar noon, lunar phase and seasonal turning.",
   "id": "/soluna/",
   "start_url": "/soluna/",
   "scope": "/soluna/",

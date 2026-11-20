@@ -327,7 +327,13 @@ function nextTurningUTC(nowUTC) {
   return { name: names[k], instantUTC: t1 };
 }
 function previousTurningUTC(nowUTC) {
-  return nextTurningUTC(new Date(nowUTC.getTime() - 100 * 86400000));
+  let previous = nextTurningUTC(new Date(nowUTC.getTime() - 100 * 86400000));
+  for (let i = 0; i < 3; i++) {
+    const following = nextTurningUTC(new Date(previous.instantUTC.getTime() + 86400000));
+    if (following.instantUTC > nowUTC) break;
+    previous = following;
+  }
+  return previous;
 }
 
 function isSecure() {
@@ -498,6 +504,7 @@ async function sampleState(prefs) {
     lunar: { ageDays: age, illum, waxing, ageFrac, phaseName: phaseName(phase) },
     turning: { name: turning.name, instantUTC: turning.instantUTC, countdownMs: turning.instantUTC - nowUTC },
     seasonal: { prevTurningUTC: previousTurning.instantUTC, nextTurningUTC: turning.instantUTC, progress: seasonalProgress },
+    year: { progress: wrapRad(sun.lambda) / τ },
     tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "local",
     source: prefs.source || "fallback",
     solarAltitude
@@ -646,7 +653,7 @@ function createRenderer(canvas) {
 
   function staticKey(state, colors, centerTone) {
     return [renderWidth, renderHeight, renderDpr, centerTone,
-      state.seasonal.progress, state.solar.visualProgress,
+      state.year.progress, state.solar.visualProgress,
       colors.solarActive, colors.lunarAccent].join("|");
   }
 
@@ -693,8 +700,18 @@ function createRenderer(canvas) {
     target.globalAlpha = palette.seasonalActiveAlpha;
     target.lineWidth = palette.seasonalActiveWidth;
     target.beginPath();
-    target.arc(0, 0, Rseasonal, startAngle, startAngle + τ * state.seasonal.progress, false);
+    target.arc(0, 0, Rseasonal, startAngle, startAngle + τ * state.year.progress, false);
     target.stroke();
+
+    target.strokeStyle = palette.tick;
+    target.globalAlpha = Math.min(1, 0.42 * palette.fineAlpha);
+    target.lineWidth = palette.ringLineScale;
+    for (const a of [startAngle, Math.PI / 2]) {
+      target.beginPath();
+      target.moveTo(Math.cos(a) * (Rlunar - 4), Math.sin(a) * (Rlunar - 4));
+      target.lineTo(Math.cos(a) * (Rlunar + 4), Math.sin(a) * (Rlunar + 4));
+      target.stroke();
+    }
 
     target.lineCap = "butt";
     target.strokeStyle = colors.solarActive;
@@ -822,8 +839,8 @@ function createRenderer(canvas) {
     ctx.fill();
 
     const shimmer = reducedMotion ? 0 : 0.02 * Math.sin(performance.now() / 1400);
-    const lunarProgress = clamp(state.lunar.illum, 0, 1);
-    const lunarAlpha = clamp(0.92 + shimmer, 0.88, 1);
+    const lunarProgress = clamp(state.lunar.ageFrac, 0, 1);
+    const lunarAlpha = clamp(0.62 + 0.32 * state.lunar.illum + shimmer, 0.58, 1);
     ctx.strokeStyle = colors.lunarAccent;
     ctx.globalAlpha = lunarAlpha;
     ctx.lineWidth = 3;
@@ -831,7 +848,6 @@ function createRenderer(canvas) {
     ctx.shadowColor = palette.shadow;
     ctx.shadowBlur = 4;
     ctx.beginPath();
-    const lunarDirection = state.lunar.waxing ? 1 : -1;
     const lunarEndAngle = startAngle + τ * lunarProgress;
     ctx.arc(
       cx,
@@ -849,7 +865,7 @@ function createRenderer(canvas) {
         cy,
         radius: Rlunar,
         angle: lunarEndAngle,
-        direction: lunarDirection,
+        direction: 1,
         color: colors.lunarAccent,
         lineWidth: 3,
         alpha: lunarAlpha
@@ -1101,17 +1117,11 @@ function temporalPhrase(state) {
     rescheduleFrame();
   };
   const requestLocationRefresh = () => obtainLocationThenRefresh(Prefs.load(), refreshAfterLocation);
+  let geoState = null, placeNote = "";
   geoPermissionState().then(state => {
+    geoState = state;
     if (AppLifecycle.isActive() && state === "granted") requestLocationRefresh();
   });
-  let locationGestureConsumed = false;
-  const onceGesture = () => {
-    if (locationGestureConsumed) return;
-    locationGestureConsumed = true;
-    document.removeEventListener("pointerdown", onceGesture, { passive: true });
-    requestLocationRefresh();
-  };
-  document.addEventListener("pointerdown", onceGesture, { passive: true });
   AppLifecycle.subscribe(async active => {
     const run = ++lifecycleRun;
     if (!active) {
@@ -1127,6 +1137,7 @@ function temporalPhrase(state) {
     if (run !== lifecycleRun || !AppLifecycle.isActive()) return;
     if (resizePending) scheduleResize();
     const state = await geoPermissionState();
+    geoState = state;
     if (run !== lifecycleRun || !AppLifecycle.isActive()) return;
     const p = Prefs.load();
     if (state === "granted" && typeof p.lon !== "number") {
@@ -1144,6 +1155,7 @@ function temporalPhrase(state) {
     overlay.scrollTop = 0;
     overlay.setAttribute("aria-hidden", "false");
     canvas.setAttribute("aria-expanded", "true");
+    canvas.inert = true;
     overlayThrottleAt = performance.now() + 520;
     updateOverlay(cached);
     rescheduleFrame(true);
@@ -1154,6 +1166,7 @@ function temporalPhrase(state) {
     document.body.classList.remove("overlay-open");
     overlay.setAttribute("aria-hidden", "true");
     canvas.setAttribute("aria-expanded", "false");
+    canvas.inert = false;
     overlayThrottleAt = 0;
     rescheduleFrame(true);
     readingsTrigger?.focus?.({ preventScroll: true });
@@ -1169,15 +1182,39 @@ function temporalPhrase(state) {
   canvas.addEventListener("keydown", event => {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
-    onceGesture();
     if (!overlayIsOpen()) openOverlay(canvas);
   });
-  document.addEventListener("click", () => toggleReadings(canvas));
-  document.addEventListener("keydown", e => { if (e.key === "Escape") closeReadings(); });
+  document.addEventListener("click", () => {
+    if (overlayIsOpen() && String(window.getSelection?.() || "").trim()) return;
+    toggleReadings(canvas);
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { closeReadings(); return; }
+    if ((e.key === "Enter" || e.key === " ") && overlayIsOpen() && e.target !== canvas && !e.target.closest?.("button")) {
+      e.preventDefault();
+      closeReadings();
+    }
+  });
+
+  const placeAction = document.getElementById("placeAction");
+  placeAction.addEventListener("click", async event => {
+    event.stopPropagation();
+    placeAction.disabled = true;
+    placeNote = "Finding your place…";
+    updateOverlay(cached);
+    await requestLocationRefresh();
+    geoState = await geoPermissionState();
+    const found = Prefs.load().source === "gps";
+    placeNote = found ? "" : (geoState === "denied"
+      ? "Location is blocked for this site; the time zone stays in use."
+      : "No place found; the time zone stays in use.");
+    placeAction.disabled = false;
+    updateOverlay(cached);
+  });
 
   function updateOverlay(state) {
     const insecure = !isSecure();
-    const status = insecure ? "HTTPS needed for precise place" : (state.source === "gps" ? "precise place" : "time zone estimate");
+    const precise = state.source === "gps";
     document.getElementById("temporalPhrase").textContent = temporalPhrase(state);
     document.getElementById("solarSummary").textContent =
       `Noon to noon · ${fmtProgressPercent(state.solar.progress)}% complete`;
@@ -1189,9 +1226,15 @@ function temporalPhrase(state) {
       `${state.turning.name} · ${fmtCountdown(state.turning.countdownMs)}`;
     document.getElementById("turningPhrase").textContent = turningPhrase(state.turning.countdownMs);
     document.getElementById("locSummary").textContent =
-      `${state.tz} · ${fmtLonRadToDegE(state.lon)} · ${status}`;
-    document.getElementById("locPhrase").textContent =
-      state.source === "gps" ? "The dial is tuned to your longitude." : "The dial listens to local time until place is known.";
+      `${state.tz} · ${fmtLonRadToDegE(state.lon)}`;
+    document.getElementById("locPhrase").textContent = precise
+      ? "Precise place. The dial is tuned to your longitude."
+      : insecure
+        ? "Time zone estimate. HTTPS is needed for precise place."
+        : placeNote || (geoState === "denied"
+          ? "Time zone estimate. Location is blocked for this site."
+          : "Time zone estimate. The dial listens to local time until place is known.");
+    placeAction.hidden = precise || insecure || !("geolocation" in navigator) || geoState === "denied";
   }
 
 })();

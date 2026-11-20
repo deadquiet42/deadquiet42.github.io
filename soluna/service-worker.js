@@ -1,12 +1,12 @@
-const CACHE_NAME = 'soluna-v13';
+const CACHE_NAME = 'soluna-v14';
 const NAVIGATION_TIMEOUT_MS = 3000;
 const APP_SCOPE_PATH = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
-  './pwa.js',
+  './styles.css?v=1.6',
+  './app.js?v=1.6',
+  './pwa.js?v=1.6',
   './manifest.json',
   './icon-16.png',
   './icon-32.png',
