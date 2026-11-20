@@ -58,9 +58,9 @@ const API = 'https://treetops.deadquiet42.workers.dev';
 const PAGE = 24;
 
 const RUNNER = `<!doctype html><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}canvas{display:block;width:100%;height:100%;object-fit:contain}</style><canvas id="c" width="1920" height="1080"></canvas><script>
-var c=document.getElementById("c"),x=c.getContext("2d"),S=Math.sin,C=Math.cos,T=Math.tan,R=function(r,g,b,a){return"rgba("+(r|0)+","+(g|0)+","+(b|0)+","+(a===undefined?1:a)+")"},u=null,f=0,go=true,said=false;
-onmessage=function(e){var d=e.data||{};if(d.code!==undefined){try{u=new Function("t",d.code);c.width=1920;c.height=1080;f=0;said=false}catch(er){u=null;parent.postMessage({err:String(er.message)},"*")}}if(d.play!==undefined)go=d.play};
-(function l(){requestAnimationFrame(l);if(!u||!go)return;var t=f/60;f++;try{u(t);if(!said){said=true;parent.postMessage({ok:true},"*")}}catch(er){u=null;parent.postMessage({err:String(er.message)},"*")}})();
+var c=document.getElementById("c"),x=c.getContext("2d"),S=Math.sin,C=Math.cos,T=Math.tan,R=function(r,g,b,a){return"rgba("+(r|0)+","+(g|0)+","+(b|0)+","+(a===undefined?1:a)+")"},u=null,f=0,go=true,said=false,h=false,k=0;
+onmessage=function(e){var d=e.data||{};if(d.code!==undefined){try{u=new Function("t",d.code);c.width=1920;c.height=1080;f=0;said=false}catch(er){u=null;parent.postMessage({err:String(er.message)},"*")}}if(d.play!==undefined)go=d.play;if(d.half!==undefined)h=d.half};
+(function l(){requestAnimationFrame(l);if(!u||!go)return;if(h&&(k^=1))return;var t=f/60;f+=h?2:1;try{u(t);if(!said){said=true;parent.postMessage({ok:true},"*")}}catch(er){u=null;parent.postMessage({err:String(er.message)},"*")}})();
 <\/script>`;
 
 const $ = s => document.querySelector(s);
@@ -73,7 +73,7 @@ let adminKey = sessionStorage.getItem('onefortyadmin') || '';
 
 addEventListener('message', e => { const h = listeners.get(e.source); if (h) h(e.data || {}); });
 
-function makeFrame(src, onMsg) {
+function makeFrame(src, onMsg, opts) {
   const f = document.createElement('iframe');
   f.className = 'frame';
   f.setAttribute('sandbox', 'allow-scripts');
@@ -81,7 +81,7 @@ function makeFrame(src, onMsg) {
   f.srcdoc = RUNNER;
   f.addEventListener('load', () => {
     listeners.set(f.contentWindow, onMsg);
-    f.contentWindow.postMessage({ code: src }, '*');
+    f.contentWindow.postMessage({ code: src, ...opts }, '*');
   }, { once: true });
   return f;
 }
@@ -160,15 +160,27 @@ function ago(ms) {
   return new Date(ms).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
 }
 
-const watcher = new IntersectionObserver(entries => entries.forEach(e => {
+function tell(el, msg) { if (el.frame && el.frame.contentWindow) el.frame.contentWindow.postMessage(msg, '*'); }
+
+const near = new IntersectionObserver(entries => entries.forEach(e => {
   const el = e.target;
-  if (e.isIntersecting) {
-    if (!el.frame) {
-      el.frame = makeFrame(el.post.code, d => { if (d.err) el.querySelector('.ferr').textContent = d.err; });
-      el.querySelector('.slot').append(el.frame);
-    } else if (el.frame.contentWindow) el.frame.contentWindow.postMessage({ play: true }, '*');
-  } else if (el.frame && el.frame.contentWindow) el.frame.contentWindow.postMessage({ play: false }, '*');
-}), { rootMargin: '150px' });
+  if (e.isIntersecting && !el.frame) {
+    el.frame = makeFrame(el.post.code, d => { if (d.err) el.querySelector('.ferr').textContent = d.err; }, { play: !!el.shown, half: true });
+    el.querySelector('.slot').append(el.frame);
+  } else if (!e.isIntersecting && el.frame) {
+    listeners.delete(el.frame.contentWindow);
+    el.frame.remove();
+    el.frame = null;
+  }
+}), { rootMargin: '800px 0px' });
+
+const seen = new IntersectionObserver(entries => entries.forEach(e => {
+  const el = e.target;
+  el.shown = e.intersectionRatio >= .5;
+  tell(el, { play: el.shown });
+}), { threshold: [0, .5] });
+
+const watcher = { observe(el) { near.observe(el); seen.observe(el); }, unobserve(el) { near.unobserve(el); seen.unobserve(el); } };
 
 function showRemixes(el, n) {
   el.post.remixes = n;
