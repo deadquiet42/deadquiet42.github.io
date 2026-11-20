@@ -818,8 +818,14 @@ function handleReducedMotionChange() {
   }
 }
 
+function hasOpenDialog() {
+  return !modal.classList.contains('hidden') ||
+    !resetConfirm.classList.contains('hidden') ||
+    !extinguishConfirm.classList.contains('hidden');
+}
+
 function updateVisualActivity() {
-  const visualsPaused = !activeBaseReady || !isPageActive();
+  const visualsPaused = !activeBaseReady || !isPageActive() || hasOpenDialog();
   if (flame) flame.setPaused(visualsPaused);
 
   if (visualsPaused || !lit) {
