@@ -22,11 +22,7 @@ const COLOR_MAP = {
   }
 };
 
-const BASE_OFFSETS = {
-  'base-01': { x: 0,  y: -8,  scale: 1.00 },
-  'base-02': { x: 2,  y: -10, scale: 0.96 },
-  'base-03': { x: -1, y: -12, scale: 1.06 }
-};
+const WICK = { x: 50, y: 6 };
 
 function vhash(n) { n = Math.sin(n) * 43758.5453; return n - Math.floor(n); }
 function vnoise1D(x) {
@@ -61,6 +57,7 @@ export class Flame {
     this.onIntensity = typeof onIntensity === 'function' ? onIntensity : null;
     this._paletteResponse = COLOR_MAP.amber.response;
     this._lastIntensity = 1;
+    this._fuel = 1;
 
     this._t = 0;
     this._time = 0;
@@ -263,8 +260,6 @@ export class Flame {
     this.core = core;
     this._stops = { aura: [a0, a1, a2], core: [c0, c1, c2] };
     this._feT = feT;
-
-    this._baseTransform = '';
   }
 
   _tick() {
@@ -281,13 +276,23 @@ export class Flame {
     const burstSide = isBurst ? fbm(t * 0.18 + this._seeds.whip, 2, 2, 0.55) : 0;
     const burstFlutter = isBurst ? fbm(t * 0.7 + this._seeds.lick, 2, 2, 0.55) : 0;
 
+    const low = 1 - this._fuel;
+    const gutter = low > 0
+      ? low * low * Math.max(0, n11(t * 3.1 + this._seeds.collapse))
+      : 0;
+
     const collapseWave = 0.5 + 0.5 * Math.sin(t * 0.33 + this._seeds.collapse);
-    const collapseGate = smooth(clamp((collapseWave - 0.965) / 0.035, 0, 1));
+    const collapseFloor = 0.965 - 0.22 * low;
+    const collapseGate = smooth(clamp((collapseWave - collapseFloor) / (1 - collapseFloor), 0, 1));
     const collapse = collapseGate > 0
       ? collapseGate * (0.5 + 0.5 * fbm(t * 0.09 + this._seeds.collapse, 2, 2, 0.55))
       : 0;
     const energyNoise = 0.5 + 0.5 * fbm(t * 0.72 + this._seeds.flick, 2, 2, 0.6);
-    const intensity = clamp(0.72 + energyNoise * 0.22 + burstPower * 0.14 - collapse * 0.18, 0.58, 1.08);
+    const intensity = clamp(
+      0.72 + energyNoise * 0.22 + burstPower * 0.14 - collapse * 0.18 - low * 0.22 - gutter * 0.18,
+      0.58 - low * 0.18,
+      1.08
+    );
     this._lastIntensity = intensity;
 
     const b = this._auraBase;
@@ -453,8 +458,8 @@ export class Flame {
 
     if (isBurst) flick += 0.05 * burstPower;
     flick -= 0.04 * collapse;
-    const auraOpacity = flick * this._paletteResponse.aura * (0.82 + intensity * 0.18);
-    this.aura.setAttribute('opacity', clamp(auraOpacity, 0.62, 0.98).toFixed(2));
+    const auraOpacity = flick * this._paletteResponse.aura * (0.82 + intensity * 0.18) * (1 - gutter * 0.25);
+    this.aura.setAttribute('opacity', clamp(auraOpacity, 0.62 - low * 0.2, 0.98).toFixed(2));
     this.core.setAttribute('fill-opacity', clamp((0.42 + intensity * 0.16) * this._paletteResponse.core, 0.42, 0.68).toFixed(3));
 
     if (this._t % 2 === 0) {
@@ -467,7 +472,7 @@ export class Flame {
       this._stops.aura[2].setAttribute('stop-opacity', auraTip.toFixed(3));
       this._stops.core[1].setAttribute('stop-opacity', coreGlow.toFixed(3));
       this._stops.core[2].setAttribute('stop-opacity', (0.90 + 0.08 * breath).toFixed(3));
-      if (this.onIntensity) this.onIntensity(clamp(intensity * this._paletteResponse.light, 0.58, 1.08));
+      if (this.onIntensity) this.onIntensity(clamp(intensity * this._paletteResponse.light, 0.58 - low * 0.18, 1.08));
     }
   }
 
@@ -487,9 +492,22 @@ export class Flame {
 
   setBase(baseId) {
     this.baseId = baseId;
-    const o = BASE_OFFSETS[baseId] || { x: 0, y: -8, scale: 1 };
-    this._baseTransform = `translate(${o.x}%, ${o.y}%) scale(${o.scale})`;
-    this.wrap.setAttribute('transform', this._baseTransform);
+  }
+
+  setFuel(fuel) {
+    const next = clamp(Number.isFinite(fuel) ? fuel : 1, 0, 1);
+    if (Math.abs(next - this._fuel) < 0.001) return;
+    this._fuel = next;
+    this._applyFuel();
+  }
+
+  _applyFuel() {
+    const size = 0.7 + 0.3 * smooth(this._fuel);
+    this.wrap.setAttribute(
+      'transform',
+      `translate(${WICK.x} ${WICK.y}) scale(${size.toFixed(3)}) translate(${-WICK.x} ${-WICK.y})`
+    );
+    this.wrap.setAttribute('opacity', (0.72 + 0.28 * this._fuel).toFixed(3));
   }
 
   setLit(isLit) {
@@ -587,7 +605,7 @@ export class Flame {
     this.core.setAttribute('d', this._corePath(this._core));
     this.gAura.setAttribute('transform', '');
     this.gCore.setAttribute('transform', '');
-    this.wrap.setAttribute('transform', this._baseTransform);
+    this._applyFuel();
     this.aura.setAttribute('opacity', '0.84');
     this.core.setAttribute('fill-opacity', '0.52');
     this.core.removeAttribute('filter');

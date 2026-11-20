@@ -14,8 +14,6 @@ const lampScene      = document.querySelector('.lamp-scene');
 
 const gearBtn        = $('#settingsBtn');
 const modal          = $('#modal');
-const baseSel        = $('#base');
-const colorSel       = $('#color');
 const resetBtn       = $('#reset');
 const lockNote       = $('#lock-note');
 const fullscreenBtn  = $('#fullscreenBtn');
@@ -42,6 +40,7 @@ const DEF_UI = { baseId: 'base-01', colorId: 'amber' };
 const VALID_BASE_IDS = new Set(['base-01', 'base-02', 'base-03', 'base-04']);
 const VALID_COLOR_IDS = new Set(['amber', 'blue', 'green', 'purple']);
 const CONFIRM_EXTINGUISH_AFTER_MS = 300_000;
+const GUTTER_WINDOW_MS = 7_200_000;
 let ui = { ...DEF_UI };
 let lit = false;
 let hasOil = false;
@@ -248,7 +247,10 @@ function fmtRemaining(ms) {
 }
 
 function fmtStreakHours(ms) {
-  const totalHours = Math.floor((ms || 0) / 3600000);
+  const totalMinutes = Math.floor((ms || 0) / 60000);
+  if (totalMinutes < 60) return `${totalMinutes}m vigil`;
+
+  const totalHours = Math.floor(totalMinutes / 60);
 
   const days = Math.floor(totalHours / 24);
   const hours = totalHours % 24;
@@ -368,6 +370,12 @@ const engine = new LampEngine({
       document.body.classList.remove('ui-hidden');
     }
 
+    if (flame) {
+      flame.setFuel(snap.isLit
+        ? Math.min(1, Math.max(0, (snap.timeToTendMs || 0) / GUTTER_WINDOW_MS))
+        : 1);
+    }
+
     if (flame && snap.isLit !== wasLit) {
       flame.setLit(activeBaseReady && snap.isLit);
     }
@@ -465,9 +473,6 @@ async function syncWakeLock() {
 
 function setSettingsLock(isLit) {
   const locked = !!isLit;
-
-  baseSel.disabled = locked;
-  colorSel.disabled = locked;
 
   lockNote.style.display = locked ? 'block' : 'none';
   updateChoiceState();
@@ -745,7 +750,6 @@ function wire() {
       if (lit) return;
 
       ui.baseId = btn.dataset.base;
-      baseSel.value = ui.baseId;
       setBaseVisualReady(false);
       baseImg.src = `./${ui.baseId}.png`;
 
@@ -763,7 +767,6 @@ function wire() {
       if (lit) return;
 
       ui.colorId = btn.dataset.color;
-      colorSel.value = ui.colorId;
 
       if (flame) flame.setColor(ui.colorId);
       updateVignetteTint(ui.colorId);
@@ -783,8 +786,6 @@ function wire() {
     ui = { ...DEF_UI };
     saveUI();
 
-    baseSel.value = ui.baseId;
-    colorSel.value = ui.colorId;
     setBaseVisualReady(false);
     baseImg.src = `./${ui.baseId}.png`;
 
@@ -817,14 +818,8 @@ function handleReducedMotionChange() {
   }
 }
 
-function hasOpenDialog() {
-  return !modal.classList.contains('hidden') ||
-    !resetConfirm.classList.contains('hidden') ||
-    !extinguishConfirm.classList.contains('hidden');
-}
-
 function updateVisualActivity() {
-  const visualsPaused = !activeBaseReady || !isPageActive() || hasOpenDialog();
+  const visualsPaused = !activeBaseReady || !isPageActive();
   if (flame) flame.setPaused(visualsPaused);
 
   if (visualsPaused || !lit) {
@@ -890,8 +885,6 @@ function bindPageLifecycle() {
 function init() {
   loadUI();
 
-  baseSel.value = ui.baseId;
-  colorSel.value = ui.colorId;
   updateChoiceState();
 
   setBaseVisualReady(false);

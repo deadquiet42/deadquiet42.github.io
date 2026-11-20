@@ -82,14 +82,14 @@
       </p>
 
       <div class="modal-controls">
-        <div class="setting-row">
+        <div class="setting-row setting-stack">
           <span class="setting-label">Base</span>
 
           <div class="choice-line" role="radiogroup" aria-label="Vessel">
-            <button class="text-choice vessel-choice" type="button" data-base="base-01" aria-pressed="false">Cairn</button>
-            <button class="text-choice vessel-choice" type="button" data-base="base-02" aria-pressed="false">Sanctum</button>
-            <button class="text-choice vessel-choice" type="button" data-base="base-03" aria-pressed="false">Vessel</button>
-            <button class="text-choice vessel-choice" type="button" data-base="base-04" aria-pressed="false">Reliquary</button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-01" aria-pressed="false"><span class="vessel-thumb"><img src="base-01.png" alt="" decoding="async" loading="lazy" /></span><span class="vessel-name">Cairn</span></button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-02" aria-pressed="false"><span class="vessel-thumb"><img src="base-02.png" alt="" decoding="async" loading="lazy" /></span><span class="vessel-name">Sanctum</span></button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-03" aria-pressed="false"><span class="vessel-thumb"><img src="base-03.png" alt="" decoding="async" loading="lazy" /></span><span class="vessel-name">Vessel</span></button>
+            <button class="text-choice vessel-choice" type="button" data-base="base-04" aria-pressed="false"><span class="vessel-thumb"><img src="base-04.png" alt="" decoding="async" loading="lazy" /></span><span class="vessel-name">Reliquary</span></button>
           </div>
         </div>
 
@@ -126,20 +126,7 @@
         </div>
 
         <button id="reset" class="reset-link" type="button">Reset lamp</button>
-        <p class="version-mark" aria-label="Version 1.7">v1.7</p>
-
-        <select id="base" hidden aria-hidden="true">
-          <option value="base-01">Vessel</option>
-          <option value="base-02">Reliquary</option>
-          <option value="base-03">Sanctum</option>
-        </select>
-
-        <select id="color" hidden aria-hidden="true">
-          <option value="amber">Amber</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-          <option value="purple">Purple</option>
-        </select>
+        <p class="version-mark" aria-label="Version 1.8">v1.8</p>
       </div>
     </div>
   </div>
