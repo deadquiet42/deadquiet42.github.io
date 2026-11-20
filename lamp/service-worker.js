@@ -1,4 +1,4 @@
-const CACHE_NAME = 'perpetual-lamp-v23';
+const CACHE_NAME = 'perpetual-lamp-v24';
 const NAVIGATION_TIMEOUT_MS = 3000;
 const APP_SCOPE_PATH = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
@@ -15,12 +15,12 @@ const APP_SHELL = [
   './base-02.webp',
   './base-03.webp',
   './base-04.webp',
-  './icons/icon-16x16.png',
-  './icons/icon-32x32.png',
-  './icons/icon-180x180-v3.png',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  './icons/icon-maskable-512x512.png'
+  './icons/icon.svg',
+  './icons/icon-32.png',
+  './icons/apple-touch-icon.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
