@@ -14,7 +14,7 @@ header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 h1{font:600 30px/1 var(--mono);margin:0;letter-spacing:-.02em}
 header p{margin:0;color:var(--dim);font-size:13px}
 .compose{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:56px}
-@media(max-width:760px){.compose{grid-template-columns:1fr}}
+@media(max-width:760px){.compose{grid-template-columns:1fr}#preview{order:-1}}
 .frame{width:100%;aspect-ratio:16/9;border:0;display:block;background:#000}
 .slot{aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden}
 textarea{width:100%;min-height:160px;resize:vertical;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:14px;font:14px/1.55 var(--mono)}
