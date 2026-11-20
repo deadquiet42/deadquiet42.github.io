@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>140</title>
+<style>
+:root{--bg:#0d0d0d;--panel:#161616;--line:#2a2a2a;--text:#e6e6e6;--dim:#8a8a8a;--accent:#f2f2f2;--bad:#ff7a7a;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:36px 20px 80px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:28px}
+h1{font:600 30px/1 var(--mono);margin:0;letter-spacing:-.02em}
+header p{margin:0;color:var(--dim);font-size:13px}
+.compose{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:56px}
+@media(max-width:760px){.compose{grid-template-columns:1fr}}
+.frame{width:100%;aspect-ratio:16/9;border:0;display:block;background:#000}
+.slot{aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden}
+textarea{width:100%;min-height:160px;resize:vertical;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:14px;font:14px/1.55 var(--mono)}
+textarea:focus,input:focus{outline:1px solid var(--dim);outline-offset:0}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+input{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font:inherit;flex:1;min-width:140px}
+button{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 16px;font:inherit;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--dim)}
+button.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+button:disabled{opacity:.35;cursor:default}
+button.small{padding:4px 10px;font-size:13px}
+.count{font:13px var(--mono);color:var(--dim);margin-left:auto}
+.count.over{color:var(--bad)}
+.msg{font:13px var(--mono);color:var(--dim);min-height:20px;margin-top:10px;word-break:break-word}
+.msg.err{color:var(--bad)}
+.remixing{font:13px var(--mono);color:var(--dim);margin-top:8px}
+.remixing a,.meta a{color:var(--dim)}
+.ref{font-size:13px;color:var(--dim);margin-top:16px;line-height:1.7}
+.ref code{font-family:var(--mono);color:var(--text)}
+.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:36px 28px}
+.meta{display:flex;gap:12px;align-items:baseline;margin-top:10px;font-size:13px;color:var(--dim)}
+.meta .who{color:var(--text);font-weight:600}
+.meta .num{margin-left:auto;font-family:var(--mono);text-decoration:none}
+pre{font:13px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;margin:8px 0 10px;color:var(--text)}
+.ferr{font:12px var(--mono);color:var(--bad)}
+.acts{display:flex;gap:8px}
+.more{display:flex;justify-content:center;margin-top:40px}
+.empty{color:var(--dim)}
+:target{outline:1px solid var(--dim);outline-offset:8px;border-radius:4px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>140</h1>
+<p id="mode"></p>
+</header>
+
+<section class="compose">
+<div>
+<textarea id="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off"></textarea>
+<div class="row">
+<button id="run">Run</button>
+<span class="count" id="count">0/140</span>
+</div>
+<div class="remixing" id="remixing" hidden></div>
+<div class="row">
+<input id="handle" placeholder="Handle (first name or nickname)" maxlength="24">
+<button id="post" class="primary" disabled>Post</button>
+</div>
+<div class="msg" id="msg"></div>
+<div class="ref">
+Your code is the inside of <code>u(t)</code>, which runs 60 times a second.<br>
+<code>t</code> time in seconds &nbsp; <code>c</code> the canvas, 1920 × 1080 &nbsp; <code>x</code> its 2D context<br>
+<code>S</code> <code>C</code> <code>T</code> Math.sin, cos, tan &nbsp; <code>R(r,g,b,a)</code> makes a colour<br>
+<code>c.width|=0</code> clears the canvas. Run your code before you post it.
+</div>
+</div>
+<div class="slot" id="preview"></div>
+</section>
+
+<section class="feed" id="feed"></section>
+<div class="more"><button id="more" hidden>Older</button></div>
+</main>
+
+<script>
+const API = 'https://treetops.deadquiet42.workers.dev';
+const PAGE = 24;
+const START = 'c.width|=0\nfor(i=0;i<9;i++)x.fillRect(400+i*100+S(t)*300,400,50,200)';
+
+const RUNNER = `<!doctype html><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}canvas{display:block;width:100%;height:100%;object-fit:contain}</style><canvas id="c" width="1920" height="1080"></canvas><script>
+var c=document.getElementById("c"),x=c.getContext("2d"),S=Math.sin,C=Math.cos,T=Math.tan,R=function(r,g,b,a){return"rgba("+(r|0)+","+(g|0)+","+(b|0)+","+(a===undefined?1:a)+")"},u=null,f=0,go=true,said=false;
+onmessage=function(e){var d=e.data||{};if(d.code!==undefined){try{u=new Function("t",d.code);c.width=1920;c.height=1080;f=0;said=false}catch(er){u=null;parent.postMessage({err:String(er.message)},"*")}}if(d.play!==undefined)go=d.play};
+(function l(){requestAnimationFrame(l);if(!u||!go)return;var t=f/60;f++;try{u(t);if(!said){said=true;parent.postMessage({ok:true},"*")}}catch(er){u=null;parent.postMessage({err:String(er.message)},"*")}})();
+<\/script>`;
+
+const $ = s => document.querySelector(s);
+const codeBox = $('#code'), handleBox = $('#handle'), runBtn = $('#run'), postBtn = $('#post');
+const countEl = $('#count'), msgEl = $('#msg'), feedEl = $('#feed'), moreBtn = $('#more'), remixEl = $('#remixing');
+const len = s => [...s].length;
+const listeners = new Map();
+let okCode = null, sentCode = null, remixOf = null, newest = 0, oldest = Infinity, busy = false;
+let adminKey = sessionStorage.getItem('onefortyadmin') || '';
+
+addEventListener('message', e => { const h = listeners.get(e.source); if (h) h(e.data || {}); });
+
+function makeFrame(src, onMsg) {
+  const f = document.createElement('iframe');
+  f.className = 'frame';
+  f.setAttribute('sandbox', 'allow-scripts');
+  f.setAttribute('loading', 'lazy');
+  f.srcdoc = RUNNER;
+  f.addEventListener('load', () => {
+    listeners.set(f.contentWindow, onMsg);
+    f.contentWindow.postMessage({ code: src }, '*');
+  }, { once: true });
+  return f;
+}
+
+function say(text, err) { msgEl.textContent = text; msgEl.className = 'msg' + (err ? ' err' : ''); }
+
+const preview = makeFrame(START, d => {
+  if (d.ok) { okCode = sentCode; say(''); }
+  if (d.err) { okCode = null; say(d.err, true); }
+  update();
+});
+$('#preview').append(preview);
+
+function run() {
+  sentCode = codeBox.value;
+  okCode = null;
+  if (preview.contentWindow) preview.contentWindow.postMessage({ code: sentCode }, '*');
+  update();
+}
+
+function update() {
+  const n = len(codeBox.value);
+  countEl.textContent = n + '/140';
+  countEl.classList.toggle('over', n > 140);
+  const ready = n > 0 && n <= 140 && handleBox.value.trim() && okCode === codeBox.value;
+  postBtn.disabled = !ready || busy;
+}
+
+function setRemix(p) {
+  remixOf = p ? p.id : null;
+  remixEl.hidden = !p;
+  remixEl.innerHTML = '';
+  if (!p) return;
+  remixEl.append('remixing ');
+  const a = document.createElement('a');
+  a.href = '#p' + p.id;
+  a.textContent = '#' + p.id + ' by ' + p.handle;
+  const x = document.createElement('button');
+  x.className = 'small';
+  x.textContent = 'Cancel';
+  x.style.marginLeft = '10px';
+  x.onclick = () => setRemix(null);
+  remixEl.append(a, x);
+}
+
+const local = {
+  all() { try { return JSON.parse(localStorage.getItem('onefortyposts')) || []; } catch { return []; } },
+  save(a) { try { localStorage.setItem('onefortyposts', JSON.stringify(a)); } catch {} }
+};
+
+async function list(q) {
+  if (!API) {
+    let a = local.all().sort((m, n) => n.id - m.id);
+    if (q.before) a = a.filter(p => p.id < q.before);
+    if (q.after) a = a.filter(p => p.id > q.after);
+    return a.slice(0, PAGE);
+  }
+  const params = new URLSearchParams();
+  if (q.before) params.set('before', q.before);
+  if (q.after) params.set('after', q.after);
+  const r = await fetch(API + '/posts?' + params);
+  if (!r.ok) throw new Error('Could not load the feed');
+  return r.json();
+}
+
+async function create(post) {
+  if (!API) {
+    const a = local.all();
+    const p = { id: a.reduce((m, q) => Math.max(m, q.id), 0) + 1, ...post, created: Date.now() };
+    a.push(p);
+    local.save(a);
+    return p;
+  }
+  const r = await fetch(API + '/posts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(post) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || 'Could not post');
+  return d;
+}
+
+async function remove(id) {
+  if (!API) { local.save(local.all().filter(p => p.id !== id)); return; }
+  const r = await fetch(API + '/posts/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + adminKey } });
+  if (!r.ok) throw new Error('Could not delete');
+}
+
+function ago(ms) {
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + ' min ago';
+  if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+  return new Date(ms).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+}
+
+const watcher = new IntersectionObserver(entries => entries.forEach(e => {
+  const el = e.target;
+  if (e.isIntersecting) {
+    if (!el.frame) {
+      el.frame = makeFrame(el.post.code, d => { if (d.err) el.querySelector('.ferr').textContent = d.err; });
+      el.querySelector('.slot').append(el.frame);
+    } else if (el.frame.contentWindow) el.frame.contentWindow.postMessage({ play: true }, '*');
+  } else if (el.frame && el.frame.contentWindow) el.frame.contentWindow.postMessage({ play: false }, '*');
+}), { rootMargin: '150px' });
+
+function card(p) {
+  const el = document.createElement('article');
+  el.id = 'p' + p.id;
+  el.post = p;
+  el.innerHTML = '<div class="slot"></div><div class="meta"><span class="who"></span><span class="when"></span><span class="from"></span><a class="num"></a></div><pre></pre><div class="ferr"></div><div class="acts"><button class="small remix">Remix</button></div>';
+  el.querySelector('.who').textContent = p.handle;
+  const when = el.querySelector('.when');
+  when.dataset.t = p.created;
+  when.textContent = ago(p.created);
+  const num = el.querySelector('.num');
+  num.textContent = '#' + p.id;
+  num.href = '#p' + p.id;
+  if (p.remix) {
+    const from = el.querySelector('.from');
+    from.append('remix of ');
+    const a = document.createElement('a');
+    a.href = '#p' + p.remix;
+    a.textContent = '#' + p.remix;
+    from.append(a);
+  }
+  el.querySelector('pre').textContent = p.code;
+  el.querySelector('.remix').onclick = () => {
+    codeBox.value = p.code;
+    setRemix(p);
+    run();
+    scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  if (adminKey || !API) {
+    const del = document.createElement('button');
+    del.className = 'small';
+    del.textContent = 'Delete';
+    del.onclick = async () => {
+      if (!confirm('Delete #' + p.id + ' by ' + p.handle + '?')) return;
+      try { await remove(p.id); watcher.unobserve(el); el.remove(); } catch (e) { alert(e.message); }
+    };
+    el.querySelector('.acts').append(del);
+  }
+  watcher.observe(el);
+  return el;
+}
+
+function track(posts) {
+  posts.forEach(p => { newest = Math.max(newest, p.id); oldest = Math.min(oldest, p.id); });
+}
+
+function clearEmpty() { const e = feedEl.querySelector('.empty'); if (e) e.remove(); }
+
+async function loadFirst() {
+  try {
+    const posts = await list({});
+    track(posts);
+    posts.forEach(p => feedEl.append(card(p)));
+    moreBtn.hidden = posts.length < PAGE;
+    if (!posts.length) feedEl.innerHTML = '<p class="empty">Nothing posted yet.</p>';
+  } catch (e) { say(e.message, true); }
+}
+
+async function loadOlder() {
+  moreBtn.disabled = true;
+  try {
+    const posts = await list({ before: oldest });
+    track(posts);
+    posts.forEach(p => feedEl.append(card(p)));
+    moreBtn.hidden = posts.length < PAGE;
+  } catch (e) { say(e.message, true); }
+  moreBtn.disabled = false;
+}
+
+async function loadNewer() {
+  if (document.hidden) return;
+  try {
+    const posts = await list({ after: newest });
+    if (!posts.length) return;
+    clearEmpty();
+    track(posts);
+    posts.slice().reverse().forEach(p => { if (!document.getElementById('p' + p.id)) feedEl.prepend(card(p)); });
+  } catch {}
+}
+
+async function post() {
+  busy = true;
+  update();
+  say('Posting…');
+  try {
+    const handle = handleBox.value.trim();
+    try { localStorage.setItem('onefortyhandle', handle); } catch {}
+    const p = await create({ handle, code: codeBox.value, remix: remixOf });
+    clearEmpty();
+    track([p]);
+    feedEl.prepend(card(p));
+    setRemix(null);
+    say('Posted as #' + p.id);
+  } catch (e) { say(e.message, true); }
+  busy = false;
+  update();
+}
+
+if (location.hash === '#admin' && API && !adminKey) {
+  adminKey = prompt('Admin key') || '';
+  if (adminKey) sessionStorage.setItem('onefortyadmin', adminKey);
+  history.replaceState(null, '', location.pathname);
+}
+
+$('#mode').textContent = API ? '' : 'Local mode: posts stay on this device';
+try { handleBox.value = localStorage.getItem('onefortyhandle') || ''; } catch {}
+codeBox.value = START;
+sentCode = START;
+codeBox.addEventListener('input', update);
+codeBox.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); run(); } });
+handleBox.addEventListener('input', update);
+runBtn.onclick = run;
+postBtn.onclick = post;
+moreBtn.onclick = loadOlder;
+setInterval(loadNewer, 15000);
+setInterval(() => document.querySelectorAll('.when').forEach(w => w.textContent = ago(+w.dataset.t)), 30000);
+update();
+loadFirst();
+</script>
+</body>
+</html>
