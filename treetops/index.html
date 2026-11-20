@@ -10,8 +10,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif}
 main{max-width:680px;margin:0 auto;padding:36px 20px 80px}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-#title{display:block;width:100%;height:60px;margin:0 0 20px}
+h1{font:600 28px/1 var(--mono);margin:0 0 24px;letter-spacing:-.02em}
 .frame{width:100%;aspect-ratio:16/9;border:0;display:block;background:#000}
 .slot{aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden}
 textarea{width:100%;min-height:96px;resize:vertical;margin-top:12px;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font:14px/1.55 var(--mono)}
@@ -39,8 +38,7 @@ pre{font:13px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;margin:8
 </head>
 <body>
 <main>
-<h1 class="sr">Treetops Twigs</h1>
-<canvas id="title" aria-hidden="true"></canvas>
+<h1 id="title">Treetops Twigs</h1>
 <div class="slot" id="preview"></div>
 <textarea id="code" placeholder="Paste your code here and test it first" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off"></textarea>
 <div class="row">
@@ -86,30 +84,6 @@ function makeFrame(src, onMsg) {
   }, { once: true });
   return f;
 }
-
-const titleCanvas = $('#title'), tctx = titleCanvas.getContext('2d');
-const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-function drawTitle(ms) {
-  const t = ms / 1000, d = devicePixelRatio || 1, w = titleCanvas.clientWidth, h = titleCanvas.clientHeight;
-  if (titleCanvas.width !== Math.round(w * d)) { titleCanvas.width = Math.round(w * d); titleCanvas.height = Math.round(h * d); }
-  tctx.setTransform(d, 0, 0, d, 0, 0);
-  tctx.clearRect(0, 0, w, h);
-  tctx.font = '600 30px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
-  tctx.fillStyle = '#e6e6e6';
-  const word = 'Treetops Twigs';
-  let x = 0;
-  [...word].forEach((ch, i) => {
-    const cw = tctx.measureText(ch).width;
-    tctx.save();
-    tctx.translate(x + cw / 2, h - 14);
-    tctx.rotate(still ? 0 : Math.sin(t * 1.4 - i * .45) * .07 * (1 + i / 5));
-    tctx.fillText(ch, -cw / 2, 0);
-    tctx.restore();
-    x += cw;
-  });
-  if (!still) requestAnimationFrame(drawTitle);
-}
-requestAnimationFrame(drawTitle);
 
 function say(text, err) { msgEl.textContent = text; msgEl.className = 'msg' + (err ? ' err' : ''); }
 
