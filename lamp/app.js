@@ -163,14 +163,6 @@ document.addEventListener('touchend', e => {
   if (btn && !btn.disabled) btn.click();
 }, { passive: false });
 
-window.addEventListener('wheel', e => {
-  if (e.ctrlKey || e.metaKey) e.preventDefault();
-}, { passive: false });
-
-window.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && ['+', '=', '-', '_', '0'].includes(e.key)) e.preventDefault();
-});
-
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 const vignettePositionTimers = new Set();
