@@ -9,73 +9,44 @@
 :root{--bg:#0d0d0d;--panel:#161616;--line:#2a2a2a;--text:#e6e6e6;--dim:#8a8a8a;--accent:#f2f2f2;--bad:#ff7a7a;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif}
-main{max-width:1100px;margin:0 auto;padding:36px 20px 80px}
-header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:28px}
-h1{font:600 30px/1 var(--mono);margin:0;letter-spacing:-.02em}
-header p{margin:0;color:var(--dim);font-size:13px}
-.compose{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:56px}
-@media(max-width:760px){.compose{grid-template-columns:1fr}#preview{order:-1}}
+main{max-width:680px;margin:0 auto;padding:36px 20px 80px}
+h1{font:600 28px/1 var(--mono);margin:0 0 24px;letter-spacing:-.02em}
 .frame{width:100%;aspect-ratio:16/9;border:0;display:block;background:#000}
-.slot{aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden}
-textarea{width:100%;min-height:160px;resize:vertical;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:14px;font:14px/1.55 var(--mono)}
+.slot{aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden}
+textarea{width:100%;min-height:96px;resize:vertical;margin-top:12px;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font:14px/1.55 var(--mono)}
 textarea:focus,input:focus{outline:1px solid var(--dim);outline-offset:0}
-.row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
-input{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font:inherit;flex:1;min-width:140px}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px}
+input{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font:inherit;flex:1;min-width:0}
 button{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 16px;font:inherit;cursor:pointer}
 button:hover:not(:disabled){border-color:var(--dim)}
 button.primary{background:var(--accent);color:#000;border-color:var(--accent)}
 button:disabled{opacity:.35;cursor:default}
-button.small{padding:4px 10px;font-size:13px}
-.count{font:13px var(--mono);color:var(--dim);margin-left:auto}
-.count.over{color:var(--bad)}
-.msg{font:13px var(--mono);color:var(--dim);min-height:20px;margin-top:10px;word-break:break-word}
+button.small{padding:3px 10px;font-size:13px}
+.count{font:13px var(--mono);color:var(--dim);min-width:56px;text-align:right}
+.msg{font:13px var(--mono);color:var(--dim);min-height:20px;margin-top:8px;word-break:break-word}
 .msg.err{color:var(--bad)}
-.remixing{font:13px var(--mono);color:var(--dim);margin-top:8px}
-.remixing a,.meta a{color:var(--dim)}
-.ref{font-size:13px;color:var(--dim);margin-top:16px;line-height:1.7}
-.ref code{font-family:var(--mono);color:var(--text)}
-.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:36px 28px}
-.meta{display:flex;gap:12px;align-items:baseline;margin-top:10px;font-size:13px;color:var(--dim)}
+.feed{border-top:1px solid var(--line);margin-top:28px;padding-top:36px;display:flex;flex-direction:column;gap:48px}
+.meta{display:flex;gap:12px;align-items:center;margin-top:10px;font-size:13px;color:var(--dim)}
 .meta .who{color:var(--text);font-weight:600}
-.meta .num{margin-left:auto;font-family:var(--mono);text-decoration:none}
-pre{font:13px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;margin:8px 0 10px;color:var(--text)}
+.acts{margin-left:auto;display:flex;gap:8px}
+pre{font:13px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;margin:8px 0 0;color:var(--dim)}
 .ferr{font:12px var(--mono);color:var(--bad)}
-.acts{display:flex;gap:8px}
 .more{display:flex;justify-content:center;margin-top:40px}
-.empty{color:var(--dim)}
-:target{outline:1px solid var(--dim);outline-offset:8px;border-radius:4px}
+.empty{color:var(--dim);text-align:center}
 </style>
 </head>
 <body>
 <main>
-<header>
 <h1>140</h1>
-<p id="mode"></p>
-</header>
-
-<section class="compose">
-<div>
+<div class="slot" id="preview"></div>
 <textarea id="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off"></textarea>
 <div class="row">
 <button id="run">Run</button>
+<input id="handle" placeholder="Name" maxlength="24">
 <span class="count" id="count">0/140</span>
-</div>
-<div class="remixing" id="remixing" hidden></div>
-<div class="row">
-<input id="handle" placeholder="Handle (first name or nickname)" maxlength="24">
 <button id="post" class="primary" disabled>Post</button>
 </div>
 <div class="msg" id="msg"></div>
-<div class="ref">
-Your code is the inside of <code>u(t)</code>, which runs 60 times a second.<br>
-<code>t</code> time in seconds &nbsp; <code>c</code> the canvas, 1920 × 1080 &nbsp; <code>x</code> its 2D context<br>
-<code>S</code> <code>C</code> <code>T</code> Math.sin, cos, tan &nbsp; <code>R(r,g,b,a)</code> makes a colour<br>
-<code>c.width|=0</code> clears the canvas. Run your code before you post it.
-</div>
-</div>
-<div class="slot" id="preview"></div>
-</section>
-
 <section class="feed" id="feed"></section>
 <div class="more"><button id="more" hidden>Older</button></div>
 </main>
@@ -93,7 +64,7 @@ onmessage=function(e){var d=e.data||{};if(d.code!==undefined){try{u=new Function
 
 const $ = s => document.querySelector(s);
 const codeBox = $('#code'), handleBox = $('#handle'), runBtn = $('#run'), postBtn = $('#post');
-const countEl = $('#count'), msgEl = $('#msg'), feedEl = $('#feed'), moreBtn = $('#more'), remixEl = $('#remixing');
+const countEl = $('#count'), msgEl = $('#msg'), feedEl = $('#feed'), moreBtn = $('#more');
 const len = s => [...s].length;
 const listeners = new Map();
 let okCode = null, sentCode = null, remixOf = null, newest = 0, oldest = Infinity, busy = false;
@@ -133,27 +104,11 @@ function run() {
 function update() {
   const n = len(codeBox.value);
   countEl.textContent = n + '/140';
-  countEl.classList.toggle('over', n > 140);
   const ready = n > 0 && n <= 140 && handleBox.value.trim() && okCode === codeBox.value;
   postBtn.disabled = !ready || busy;
 }
 
-function setRemix(p) {
-  remixOf = p ? p.id : null;
-  remixEl.hidden = !p;
-  remixEl.innerHTML = '';
-  if (!p) return;
-  remixEl.append('remixing ');
-  const a = document.createElement('a');
-  a.href = '#p' + p.id;
-  a.textContent = '#' + p.id + ' by ' + p.handle;
-  const x = document.createElement('button');
-  x.className = 'small';
-  x.textContent = 'Cancel';
-  x.style.marginLeft = '10px';
-  x.onclick = () => setRemix(null);
-  remixEl.append(a, x);
-}
+function setRemix(p) { remixOf = p ? p.id : null; }
 
 const local = {
   all() { try { return JSON.parse(localStorage.getItem('onefortyposts')) || []; } catch { return []; } },
@@ -217,22 +172,11 @@ function card(p) {
   const el = document.createElement('article');
   el.id = 'p' + p.id;
   el.post = p;
-  el.innerHTML = '<div class="slot"></div><div class="meta"><span class="who"></span><span class="when"></span><span class="from"></span><a class="num"></a></div><pre></pre><div class="ferr"></div><div class="acts"><button class="small remix">Remix</button></div>';
+  el.innerHTML = '<div class="slot"></div><div class="meta"><span class="who"></span><span class="when"></span><span class="acts"><button class="small remix">Remix</button></span></div><pre></pre><div class="ferr"></div>';
   el.querySelector('.who').textContent = p.handle;
   const when = el.querySelector('.when');
   when.dataset.t = p.created;
   when.textContent = ago(p.created);
-  const num = el.querySelector('.num');
-  num.textContent = '#' + p.id;
-  num.href = '#p' + p.id;
-  if (p.remix) {
-    const from = el.querySelector('.from');
-    from.append('remix of ');
-    const a = document.createElement('a');
-    a.href = '#p' + p.remix;
-    a.textContent = '#' + p.remix;
-    from.append(a);
-  }
   el.querySelector('pre').textContent = p.code;
   el.querySelector('.remix').onclick = () => {
     codeBox.value = p.code;
@@ -266,7 +210,7 @@ async function loadFirst() {
     track(posts);
     posts.forEach(p => feedEl.append(card(p)));
     moreBtn.hidden = posts.length < PAGE;
-    if (!posts.length) feedEl.innerHTML = '<p class="empty">Nothing posted yet.</p>';
+    if (!posts.length) feedEl.innerHTML = '<p class="empty">Nothing yet</p>';
   } catch (e) { say(e.message, true); }
 }
 
@@ -304,7 +248,7 @@ async function post() {
     track([p]);
     feedEl.prepend(card(p));
     setRemix(null);
-    say('Posted as #' + p.id);
+    say('');
   } catch (e) { say(e.message, true); }
   busy = false;
   update();
@@ -316,7 +260,6 @@ if (location.hash === '#admin' && API && !adminKey) {
   history.replaceState(null, '', location.pathname);
 }
 
-$('#mode').textContent = API ? '' : 'Local mode: posts stay on this device';
 try { handleBox.value = localStorage.getItem('onefortyhandle') || ''; } catch {}
 codeBox.value = START;
 sentCode = START;
