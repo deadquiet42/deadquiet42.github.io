@@ -120,7 +120,8 @@ async function list(q) {
     let a = local.all().sort((m, n) => n.id - m.id);
     if (q.before) a = a.filter(p => p.id < q.before);
     if (q.after) a = a.filter(p => p.id > q.after);
-    return a.slice(0, PAGE);
+    const all = local.all();
+    return a.slice(0, PAGE).map(p => ({ ...p, remixes: all.filter(r => r.remix === p.id).length }));
   }
   const params = new URLSearchParams();
   if (q.before) params.set('before', q.before);
@@ -168,15 +169,21 @@ const watcher = new IntersectionObserver(entries => entries.forEach(e => {
   } else if (el.frame && el.frame.contentWindow) el.frame.contentWindow.postMessage({ play: false }, '*');
 }), { rootMargin: '150px' });
 
+function showRemixes(el, n) {
+  el.post.remixes = n;
+  el.querySelector('.remixes').textContent = n ? 'remixed ' + n + (n === 1 ? ' time' : ' times') : '';
+}
+
 function card(p) {
   const el = document.createElement('article');
   el.id = 'p' + p.id;
   el.post = p;
-  el.innerHTML = '<div class="slot"></div><div class="meta"><span class="who"></span><span class="when"></span><span class="acts"><button class="small remix">Remix</button></span></div><pre></pre><div class="ferr"></div>';
+  el.innerHTML = '<div class="slot"></div><div class="meta"><span class="who"></span><span class="when"></span><span class="remixes"></span><span class="acts"><button class="small remix">Remix</button></span></div><pre></pre><div class="ferr"></div>';
   el.querySelector('.who').textContent = p.handle;
   const when = el.querySelector('.when');
   when.dataset.t = p.created;
   when.textContent = ago(p.created);
+  showRemixes(el, p.remixes || 0);
   el.querySelector('pre').textContent = p.code;
   el.querySelector('.remix').onclick = () => {
     codeBox.value = p.code;
@@ -247,6 +254,8 @@ async function post() {
     clearEmpty();
     track([p]);
     feedEl.prepend(card(p));
+    const parent = remixOf && document.getElementById('p' + remixOf);
+    if (parent) showRemixes(parent, (parent.post.remixes || 0) + 1);
     setRemix(null);
     say('');
   } catch (e) { say(e.message, true); }
