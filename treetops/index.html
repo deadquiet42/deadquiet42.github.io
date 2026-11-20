@@ -32,6 +32,7 @@ button.small{padding:3px 10px;font-size:13px}
 pre{font:13px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;margin:8px 0 0;color:var(--dim)}
 .ferr{font:12px var(--mono);color:var(--bad)}
 .more{display:flex;justify-content:center;margin-top:40px}
+#adminbox{margin:0 0 20px}
 .empty{color:var(--dim);text-align:center}
 </style>
 </head>
@@ -253,12 +254,25 @@ async function post() {
   update();
 }
 
-if (location.hash === '#admin') {
-  const k = API ? prompt('Admin key') : '';
-  if (k) { adminKey = k; sessionStorage.setItem('onefortyadmin', k); }
-  history.replaceState(null, '', location.pathname);
+function adminForm() {
+  if (!API || document.getElementById('adminbox')) return;
+  const box = document.createElement('div');
+  box.id = 'adminbox';
+  box.className = 'row';
+  box.innerHTML = '<input id="adminkey" type="password" placeholder="Admin key"><button id="adminok">Unlock</button>';
+  document.querySelector('h1').after(box);
+  const go = () => {
+    const k = document.getElementById('adminkey').value.trim();
+    if (!k) return;
+    sessionStorage.setItem('onefortyadmin', k);
+    location.replace(location.pathname);
+  };
+  document.getElementById('adminok').onclick = go;
+  document.getElementById('adminkey').onkeydown = e => { if (e.key === 'Enter') go(); };
+  document.getElementById('adminkey').focus();
 }
-addEventListener('hashchange', () => { if (location.hash === '#admin') location.reload(); });
+if (location.hash === '#admin') adminForm();
+addEventListener('hashchange', () => { if (location.hash === '#admin') adminForm(); });
 
 try { handleBox.value = localStorage.getItem('onefortyhandle') || ''; } catch {}
 sentCode = '';
