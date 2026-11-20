@@ -320,7 +320,15 @@ $('#mode').textContent = API ? '' : 'Local mode: posts stay on this device';
 try { handleBox.value = localStorage.getItem('onefortyhandle') || ''; } catch {}
 codeBox.value = START;
 sentCode = START;
-codeBox.addEventListener('input', update);
+codeBox.addEventListener('input', () => {
+  const chars = [...codeBox.value];
+  if (chars.length > 140) {
+    const pos = codeBox.selectionStart - (codeBox.value.length - chars.slice(0, 140).join('').length);
+    codeBox.value = chars.slice(0, 140).join('');
+    codeBox.setSelectionRange(Math.max(0, pos), Math.max(0, pos));
+  }
+  update();
+});
 codeBox.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); run(); } });
 handleBox.addEventListener('input', update);
 runBtn.onclick = run;
