@@ -22,7 +22,6 @@ const longWatchEl       = $('#long-watch');
 const longWatchBurning  = $('#long-watch-burning');
 const longWatchLongest  = $('#long-watch-longest');
 const longWatchAverage  = $('#long-watch-average');
-const unlitPrompt    = $('#unlit-prompt');
 const watchLine      = $('#watch-line');
 const extinguishConfirm = $('#extinguish-confirm');
 const extinguishConfirmStreak = $('#extinguish-confirm-streak');
@@ -56,10 +55,10 @@ let activeBaseReady = false;
 let activeBaseLoadId = 0;
 
 const baseImages = [
-  'base-01.png',
-  'base-02.png',
-  'base-03.png',
-  'base-04.png',
+  'base-01.webp',
+  'base-02.webp',
+  'base-03.webp',
+  'base-04.webp',
 ];
 let alternateBasesLoaded = false;
 
@@ -268,7 +267,7 @@ function buildStatusText(snap) {
     return [remaining, streak].filter(Boolean).join('  •  ');
   }
 
-  return snap.hasOil ? 'Light the flame' : 'The lamp is empty';
+  return snap.hasOil ? 'Light the flame.' : 'The lamp is empty.';
 }
 
 function updateVignetteTint(colorId) {
@@ -751,7 +750,7 @@ function wire() {
 
       ui.baseId = btn.dataset.base;
       setBaseVisualReady(false);
-      baseImg.src = `./${ui.baseId}.png`;
+      baseImg.src = `./${ui.baseId}.webp`;
 
       applyBackgroundForBase(ui.baseId);
       if (flame) flame.setBase(ui.baseId);
@@ -787,7 +786,7 @@ function wire() {
     saveUI();
 
     setBaseVisualReady(false);
-    baseImg.src = `./${ui.baseId}.png`;
+    baseImg.src = `./${ui.baseId}.webp`;
 
     applyBackgroundForBase(ui.baseId);
 
@@ -894,7 +893,7 @@ function init() {
   updateChoiceState();
 
   setBaseVisualReady(false);
-  baseImg.src = `./${ui.baseId}.png`;
+  baseImg.src = `./${ui.baseId}.webp`;
   applyBackgroundForBase(ui.baseId);
   waitForActiveBaseImage();
 
@@ -924,10 +923,6 @@ function init() {
   syncPageActivity();
 
   const snap = engine.emit();
-
-  if (!snap.isLit) {
-    unlitPrompt.hidden = false;
-  }
 
   if (snap.isLit) {
     engine.start();

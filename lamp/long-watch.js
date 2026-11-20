@@ -52,7 +52,7 @@ export function formatWatchStats(stats, currentStreakMs) {
 
   return {
     title: 'The Long Watch',
-    burning: `${burning} ${burning === 1 ? 'lamp burns' : 'lamps burn'} tonight.`,
+    burning: `${burning} ${burning === 1 ? 'lamp is' : 'lamps are'} burning.`,
     longest: formatDuration(stats?.longestCurrentVigilMs),
     average: formatDuration(stats?.averageCurrentVigilMs),
     yours: formatDuration(currentStreakMs)

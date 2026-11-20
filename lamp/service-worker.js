@@ -1,4 +1,4 @@
-const CACHE_NAME = 'perpetual-lamp-v19';
+const CACHE_NAME = 'perpetual-lamp-v20';
 const NAVIGATION_TIMEOUT_MS = 3000;
 const APP_SCOPE_PATH = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
@@ -11,10 +11,10 @@ const APP_SHELL = [
   './long-watch.js',
   './pwa.js',
   './manifest.json',
-  './base-01.png',
-  './base-02.png',
-  './base-03.png',
-  './base-04.png',
+  './base-01.webp',
+  './base-02.webp',
+  './base-03.webp',
+  './base-04.webp',
   './icons/icon-16x16.png',
   './icons/icon-32x32.png',
   './icons/icon-180x180-v3.png',
