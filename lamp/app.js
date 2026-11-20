@@ -442,8 +442,16 @@ async function refreshWatchLine() {
 let wakeLock = null;
 let wakeLockPending = false;
 
+const standaloneQuery = window.matchMedia('(display-mode: standalone)');
+
+function isImmersive() {
+  return !!document.fullscreenElement ||
+    standaloneQuery.matches ||
+    navigator.standalone === true;
+}
+
 async function syncWakeLock() {
-  const want = lit && isPageActive() && 'wakeLock' in navigator;
+  const want = lit && isPageActive() && isImmersive() && 'wakeLock' in navigator;
 
   if (!want) {
     if (wakeLock) {
@@ -719,7 +727,11 @@ function wire() {
       console.warn('Fullscreen request was not completed.', err);
     }
   });
-  document.addEventListener('fullscreenchange', updateFullscreenLabel);
+  document.addEventListener('fullscreenchange', () => {
+    updateFullscreenLabel();
+    syncWakeLock();
+  });
+  standaloneQuery.addEventListener?.('change', syncWakeLock);
 
   lightBtn.addEventListener('click', () => engine.light());
   extinguishBtn.addEventListener('click', () => {
