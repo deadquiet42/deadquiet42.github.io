@@ -11,6 +11,8 @@ const extinguishBtn  = $('#extinguish');
 const baseImg        = document.querySelector('.lamp-base');
 const flameMount     = document.querySelector('.flame-mount');
 const lampScene      = document.querySelector('.lamp-scene');
+const lampEl         = document.querySelector('.lamp');
+const stageEl        = document.querySelector('.stage');
 
 const gearBtn        = $('#settingsBtn');
 const modal          = $('#modal');
@@ -304,9 +306,10 @@ function updateVignettePosition() {
   const cx = flameRect.left + flameRect.width / 2;
   const cy = flameRect.top + flameRect.height * 0.3;
 
-  const radius = sceneRect.height * 0.82;
-  const inner = sceneRect.height * 0.36;
-  const mid = sceneRect.height * 0.54;
+  const glowSpan = sceneRect.width * 4 / 3;
+  const radius = glowSpan * 0.82;
+  const inner = glowSpan * 0.36;
+  const mid = glowSpan * 0.54;
 
   const root = document.documentElement;
 
@@ -405,6 +408,7 @@ const engine = new LampEngine({
 
     setSettingsLock(lit);
     wasLit = snap.isLit;
+    syncDrift();
     longWatch.updateFromSnap(snap);
     syncWakeLock();
     if (becameLit) refreshWatchLine();
@@ -835,6 +839,33 @@ function hasOpenDialog() {
     !extinguishConfirm.classList.contains('hidden');
 }
 
+const DRIFT_STEP_MS = 120_000;
+const DRIFT_PATH = [
+  [0, 0], [1, 0], [1, -1], [2, -1], [2, -2], [1, -2], [1, -3],
+  [0, -3], [-1, -3], [-1, -2], [-2, -2], [-2, -1], [-1, -1], [-1, 0]
+];
+let driftTimer = null;
+let driftIndex = 0;
+
+function stepDrift() {
+  driftIndex = (driftIndex + 1) % DRIFT_PATH.length;
+  const [x, y] = DRIFT_PATH[driftIndex];
+  lampEl.style.setProperty('--drift-x', `${x}px`);
+  lampEl.style.setProperty('--drift-y', `${y}px`);
+  refreshVignettePosition();
+}
+
+function syncDrift() {
+  const want = lit && activeBaseReady && isPageActive();
+
+  if (want && !driftTimer) {
+    driftTimer = setInterval(stepDrift, DRIFT_STEP_MS);
+  } else if (!want && driftTimer) {
+    clearInterval(driftTimer);
+    driftTimer = null;
+  }
+}
+
 function updateVisualActivity() {
   const visualsPaused = !activeBaseReady || !isPageActive() || hasOpenDialog();
   if (flame) flame.setPaused(visualsPaused);
@@ -844,6 +875,8 @@ function updateVisualActivity() {
   } else {
     startFlicker();
   }
+
+  syncDrift();
 }
 
 function syncPageActivity() {
@@ -926,6 +959,17 @@ function init() {
   };
 
   baseImg.addEventListener('load', reposition);
+
+  if (stageEl && 'ResizeObserver' in window) {
+    new ResizeObserver(entries => {
+      const box = entries[entries.length - 1].contentRect;
+      if (box.width <= 0 || box.height <= 0) return;
+      const root = document.documentElement;
+      root.style.setProperty('--stage-w', `${Math.floor(box.width)}px`);
+      root.style.setProperty('--stage-h', `${Math.floor(box.height)}px`);
+      reposition();
+    }).observe(stageEl);
+  }
   window.addEventListener('scroll', reposition, { passive: true });
   window.addEventListener('resize', reposition);
   window.visualViewport?.addEventListener('resize', reposition);
